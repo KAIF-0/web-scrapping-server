@@ -3,13 +3,15 @@ import { serve } from '@hono/node-server'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import dotenv from 'dotenv'
+import scrappingInstance from './routes/srapping-route.js'
+import chatInstance from './routes/chat-routes.js'
 
 dotenv.config()
 
 const app = new Hono()
 const port = process.env.PORT 
 
-console.log(port)
+// console.log(port)
 
 app.use('*', logger())
 app.use(cors({
@@ -18,11 +20,12 @@ app.use(cors({
 }))
 
 
+app.route('/', chatInstance)
+app.route('/', scrappingInstance)
 
-
-app.get('/', (c) => {
-  return c.text('Hello World!')
-})
+// app.get('/', (c) => {
+//   return c.text('Hello World!')
+// })
 
 
 
