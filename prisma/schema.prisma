@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Chat {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  url       String
+  key       String
+  createdAt DateTime @default(now())
+
+  messages Message[] @relation("ChatMessages")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  chatId    String
+  userId    String   @unique
+  question  String
+  response  String
+  createdAt DateTime @default(now())
+
+  chat Chat @relation("ChatMessages", fields: [chatId], references: [id])
+}
+
+model Subscription {
+  id               String           @id @default(uuid())
+  userId           String           @unique
+  username         String
+  email            String           @unique
+  contact          String
+  amount           Float            @default(5.0)
+  orderId          String           @unique
+  subscriptionType SubscriptionType
+  startDate        DateTime
+  endDate          DateTime
+  createdAt        DateTime         @default(now())
+
+  //   @@check(amount IN (5.0, 24.0))
+}
+
+enum SubscriptionType {
+  monthly
+  annually
+}

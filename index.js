@@ -2,17 +2,16 @@ import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import scrappingInstance from "./routes/srapping-route.js";
 import chatInstance from "./routes/chat-routes.js";
 import paymentInstance from "./routes/payment-routes.js";
 
-dotenv.config();
-
+config();
 const app = new Hono();
 const port = process.env.PORT;
 
-// console.log(process.env.FRONTEND_URL, port)
+// console.log(process.env.FRONTEND_URL, port);
 
 app.use("*", logger());
 app.use(
@@ -24,7 +23,7 @@ app.use(
 
 app.route("/", chatInstance);
 app.route("/", scrappingInstance);
-app.route("/", paymentInstance);
+app.route("/subscription", paymentInstance);
 
 // app.get('/', (c) => {
 //   return c.text('Hello World!')
