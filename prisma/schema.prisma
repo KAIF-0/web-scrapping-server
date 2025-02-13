@@ -38,16 +38,16 @@ model Subscription {
   id               String           @id @default(uuid())
   userId           String           @unique
   username         String
-  email            String           @unique
-  contact          String
-  amount           Float            @default(5.0)
+  email            String
+  phone            String
+  amount           Int            @default(5)
   orderId          String           @unique
   subscriptionType SubscriptionType
   startDate        DateTime
   endDate          DateTime
   createdAt        DateTime         @default(now())
 
-  //   @@check(amount IN (5.0, 24.0))
+  // @@check(amount IN (5.0, 24.0))
 }
 
 enum SubscriptionType {

@@ -19,14 +19,14 @@ export const createOrder = async ({
         resolve({
           success: true,
           msg: "Order Created",
-          order_id: order.id,
+          orderId: order.id,
           amount: amount,
           product_name: "DocsAI Pro Subscription",
           description:
             "DocsAI Pro Subscription with unlimited chats and sites integrations.",
           userId: userId,
           phone: phone,
-          name: name,
+          username: name,
           email: email,
           subscriptionType: subscriptionType,
         });
