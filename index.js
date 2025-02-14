@@ -14,7 +14,7 @@ const port = process.env.PORT;
 
 // console.log(process.env.FRONTEND_URL, port);
 
-app.use("*", logger());
+app.use(process.env.FRONTEND_URL, logger());
 app.use(
   cors({
     origin: "*",
@@ -23,7 +23,7 @@ app.use(
 );
 
 //redis instance(subscriptionInstance)
-await subRedisClient
+await subRedisClient 
   .connect()
   .then(() => {
     console.log("SUBSCRIPTIONS REDIS INSTANCE CONNECTED!");
@@ -32,7 +32,9 @@ await subRedisClient
     console.log("REDIS ERROR: ", err);
   });
 
-app.route("/", chatInstance);
+
+
+  app.route("/", chatInstance);
 app.route("/", scrappingInstance);
 app.route("/subscription", paymentInstance);
 
