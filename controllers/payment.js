@@ -12,7 +12,7 @@ export const createOrder = async ({
     const options = {
       amount: parseInt(amount) * 100,
       currency: "USD",
-      receipt: "kaif8700979251@gmail.com",
+      receipt: email,
     };
     razorpayInstance.orders.create(options, (err, order) => {
       if (!err) {

@@ -14,7 +14,7 @@ const port = process.env.PORT;
 
 // console.log(process.env.FRONTEND_URL, port);
 
-app.use(process.env.FRONTEND_URL, logger());
+app.use("*", logger());
 app.use(
   cors({
     origin: "*",
@@ -27,7 +27,7 @@ await subRedisClient
   .connect()
   .then(() => {
     console.log("SUBSCRIPTIONS REDIS INSTANCE CONNECTED!");
-  })
+  }) 
   .catch((err) => {
     console.log("REDIS ERROR: ", err);
   });
