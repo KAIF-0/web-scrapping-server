@@ -7,34 +7,42 @@ import scrappingInstance from "./routes/srapping-route.js";
 import chatInstance from "./routes/chat-routes.js";
 import paymentInstance from "./routes/payment-routes.js";
 import { subRedisClient } from "./configs/redis/subscriptionInstance.js";
+import { chatRedisClient } from "./configs/redis/chatInstance.js";
 
 config();
 const app = new Hono();
 const port = process.env.PORT;
-
-// console.log(process.env.FRONTEND_URL, port);
-
-app.use("*", logger());
+ 
+// console.log(process.env.REDIS_CHAT_INSTANCE_URL, port);
+   
+app.use("*", logger());  
 app.use(
-  cors({
+  cors({  
     origin: "*",
     credentials: true,
   })
 );
 
 //redis instance(subscriptionInstance)
-await subRedisClient 
+await subRedisClient
   .connect()
   .then(() => {
-    console.log("SUBSCRIPTIONS REDIS INSTANCE CONNECTED!");
-  }) 
+    console.log("SUBSCRIPTIONS REDIS INSTANCE CONNECTED!"); 
+  })
   .catch((err) => {
-    console.log("REDIS ERROR: ", err);
+    console.log("SUBSCRIPTIONS REDIS ERROR: ", err);
   });
-
-
-
-  app.route("/", chatInstance);
+ 
+await chatRedisClient
+  .connect()
+  .then(() => {
+    console.log("CHAT REDIS INSTANCE CONNECTED!");
+  })
+  .catch((err) => {
+    console.log("CHAT REDIS ERROR: ", err);
+  });
+ 
+app.route("/chat", chatInstance);
 app.route("/", scrappingInstance);
 app.route("/subscription", paymentInstance);
 
@@ -44,11 +52,11 @@ app.route("/subscription", paymentInstance);
 
 //for error 500 (middleware)
 app.onError((err, c) => {
-  console.error(err.message);
-  return c.json(
+  console.error(err.message);  
+  return c.json( 
     {
       success: false,
-      message: "Internal Server Error!",
+      message: "Internal Server Error!", 
     },
     500
   );

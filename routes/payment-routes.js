@@ -68,7 +68,7 @@ paymentInstance.post("/saveDetails", async (c) => {
         : 365 * 24 * 60 * 60;
     subRedisClient.setEx(
       userId,
-      expiryTime,
+      expiryTime, 
       JSON.stringify(subscriptionDetails)
     );
 
@@ -86,19 +86,19 @@ paymentInstance.get("/getDetails/:userId", async (c) => {
   try {
     const userId = c.req.param("userId");
     if (userId === "null") {
-      throw new Error("User ID not found!");
+      throw new Error("Invalid userId!");
     }
 
     //get subscription details from cache or from db
-    const subscription = await getOrSetSubDetailsCache(userId);
-    if (!subscription) {
+    const subscriptionDetails = await getOrSetSubDetailsCache(userId);
+    if (!subscriptionDetails) {
       c.set("message", "Subscription not found!"); //set response message
       return c.notFound();
     }
-    // console.log(subscription);
+    // console.log(subscriptionDetails);
     return c.json({
       success: true,
-      subscription: subscription,
+      subscriptionDetails: subscriptionDetails,
     });
   } catch (error) {
     throw new Error(error.message);
