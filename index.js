@@ -16,7 +16,7 @@ const port = process.env.PORT;
 // console.log(process.env.REDIS_CHAT_INSTANCE_URL, port);
    
 app.use("*", logger());  
-app.use(
+app.use( 
   cors({  
     origin: "*",
     credentials: true,
@@ -37,7 +37,7 @@ await chatRedisClient
   .connect()
   .then(() => {
     console.log("CHAT REDIS INSTANCE CONNECTED!");
-  })
+  }) 
   .catch((err) => {
     console.log("CHAT REDIS ERROR: ", err);
   });
@@ -61,7 +61,7 @@ app.onError((err, c) => {
     500
   );
 });
-
+ 
 //for 404 (middleware)
 app.notFound((c) => {
   console.error(c.get("message"));
@@ -70,15 +70,15 @@ app.notFound((c) => {
       success: false,
       message: c.get("message"),
     },
-    404
+    404 
   );
 });
 
-serve(
+serve( 
   {
     fetch: app.fetch,
     port: port,
-  },
+  }, 
   () => {
     console.log(`Server is running on port ${port}`);
   }

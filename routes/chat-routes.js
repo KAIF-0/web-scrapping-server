@@ -4,6 +4,7 @@ import { scrapeDocumentation } from "../controllers/scrapeDocumentation.js";
 import { chatRedisClient } from "../configs/redis/chatInstance.js";
 import { getOrSetUserChats } from "../controllers/userChats.js";
 import { updateChatCache } from "../helper/updateCache.js";
+import { model } from "../configs/genAI.js";
 
 const chatInstance = new Hono();
 
@@ -98,16 +99,6 @@ chatInstance.post("/addDummyMessages/:chatId", async (c) => {
     ];
 
     for (const message of messages) {
-      await prisma.message.create({
-        data: {
-          chat: {
-            connect: { id: chatId },
-          },
-          userId,
-          question: message.question,
-          response: message.response,
-        },
-      });
     }
 
     await updateChatCache(userId);
@@ -117,9 +108,45 @@ chatInstance.post("/addDummyMessages/:chatId", async (c) => {
       message: "Dummy messages added successfully!",
     });
   } catch (error) {
-    console.error(error);
     throw new Error(error.message);
   }
 });
 
+chatInstance.post("/getResponse/:chatId", async (c) => {
+  try {
+    const { question, userId } = await c.req.json();
+    const chatId = c.req.param("chatId");
+
+    if (!chatId) {
+      throw new Error("Invalid chatId!");
+    }
+
+    // AI response using Generative AI API
+    const response = await model.generateContent([question]);
+    console.log(response.response.text());
+
+    // await prisma.message.deleteMany();
+
+    const chatMessage = await prisma.message.create({
+      data: {
+        chat: {
+          connect: { id: chatId },
+        },
+        userId,
+        question: question,
+        response: response.response.text(),
+      },
+    });
+
+    // updating cached messages
+    await updateChatCache(userId);
+    return c.json({
+      success: true,
+      message: "AI response created successfully!",
+      chatMessage,
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
 export default chatInstance;
