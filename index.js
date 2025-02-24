@@ -60,8 +60,8 @@ app.onError((err, c) => {
     },
     500
   );
-});
- 
+}); 
+  
 //for 404 (middleware)
 app.notFound((c) => {
   console.error(c.get("message"));
