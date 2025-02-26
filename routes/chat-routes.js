@@ -5,6 +5,7 @@ import { chatRedisClient } from "../configs/redis/chatInstance.js";
 import { getOrSetUserChats } from "../controllers/userChats.js";
 import { updateChatCache } from "../helper/updateCache.js";
 import { model } from "../configs/genAI.js";
+import { docsData } from "../controllers/getDocsData.js";
 
 const chatInstance = new Hono();
 
@@ -15,7 +16,7 @@ chatInstance.post("/feed-docs", async (c) => {
     // extracting a common key for all same urls with different endpoints
     const urlObj = new URL(url);
     const key =
-      urlObj.hostname.split(".")[0] === "www"
+      urlObj.hostname.split(".")[0] === "www" || "docs"
         ? urlObj.hostname.split(".")[1]
         : urlObj.hostname.split(".")[0];
 
@@ -27,7 +28,7 @@ chatInstance.post("/feed-docs", async (c) => {
       // scraping the documentation if not found in redis
       await scrapeDocumentation(key, url);
     }
-    console.log(JSON.parse(existingDocs).length);
+    // console.log(JSON.parse(existingDocs).length);
 
     // await prisma.chat.deleteMany();
 
@@ -114,18 +115,29 @@ chatInstance.post("/addDummyMessages/:chatId", async (c) => {
 
 chatInstance.post("/getResponse/:chatId", async (c) => {
   try {
-    const { question, userId } = await c.req.json();
+    const { question, userId, key, url } = await c.req.json();
     const chatId = c.req.param("chatId");
 
     if (!chatId) {
       throw new Error("Invalid chatId!");
     }
 
-    // AI response using Generative AI API
+    // const data = await docsData(key, url);
+    // const optimizedResponse = data
+    //   ? data.map((doc) => doc.content).join(" ")
+    //   : "No data available.";
+    // const isRelated =
+    //   optimizedResponse.toLowerCase().includes(key.toLowerCase()) ||
+    //   optimizedResponse.toLowerCase().includes(url.toLowerCase());
+    // const prompt = isRelated
+    //   ? `Based on the documentation data: ${optimizedResponse}, please answer the question: "${question}". If you find the answer in the data, provide the best and most concise response you can otherwise provide a response that is relevant to the question.`
+    //   : `Send response: I cannot answer this as it is not related to the documentation data.`;
+
+    // const prompt = `Based on the documentation data: ${data} , please answer the question: "${question}". If you find the answer in the data, provide the best and most concise response you can otherwise answer it yourself with the best response."`;
     const response = await model.generateContent([question]);
     console.log(response.response.text());
 
-    // await prisma.message.deleteMany();
+    // await prisma.message.deleteMany({ where: { chatId } });
 
     const chatMessage = await prisma.message.create({
       data: {

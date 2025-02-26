@@ -9,22 +9,22 @@ import paymentInstance from "./routes/payment-routes.js";
 import { subRedisClient } from "./configs/redis/subscriptionInstance.js";
 import { chatRedisClient } from "./configs/redis/chatInstance.js";
 
-config();
+config(); 
 const app = new Hono();
 const port = process.env.PORT;
- 
+  
 // console.log(process.env.REDIS_CHAT_INSTANCE_URL, port);
-   
+     
 app.use("*", logger());  
-app.use( 
-  cors({  
-    origin: "*",
-    credentials: true,
+app.use(   
+  cors({   
+    origin: "*", 
+    credentials: true, 
   })
-);
-
-//redis instance(subscriptionInstance)
-await subRedisClient
+); 
+ 
+//redis instance(subscription Instance) 
+await subRedisClient 
   .connect()
   .then(() => {
     console.log("SUBSCRIPTIONS REDIS INSTANCE CONNECTED!"); 
@@ -49,7 +49,7 @@ app.route("/subscription", paymentInstance);
 // app.get('/', (c) => {
 //   return c.text('Hello World!')
 // })
-
+ 
 //for error 500 (middleware)
 app.onError((err, c) => {
   console.error(err.message);  
@@ -59,7 +59,7 @@ app.onError((err, c) => {
       message: "Internal Server Error!", 
     },
     500
-  );
+  ); 
 }); 
   
 //for 404 (middleware)

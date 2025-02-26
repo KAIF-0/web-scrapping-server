@@ -9,11 +9,11 @@ export const getOrSetUserChats = async (key) => {
     //if not found in cache
     const freshData = await prisma.chat.findMany({
       where: { userId: key },
-      include: {
+      include: {  
         messages: true,
       },
-    });
-    if (!freshData || freshData.length === 0) return resolve(null);
+    }); 
+    if (!freshData) return resolve(null);
     console.log("User Chats: ", freshData);
 
     //cache fresh data 

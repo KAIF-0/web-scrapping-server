@@ -34,5 +34,5 @@ export const scrapeDocumentation = async (key, url) => {
   await browser.close();
   //   console.log(docsData);
   //saving the scraped data in redis
-  chatRedisClient.setEx(key, 7 * 24 * 60 * 60, JSON.stringify(docsData));
+  chatRedisClient.setEx(key, 30 * 24 * 60 * 60, JSON.stringify(docsData));
 };
