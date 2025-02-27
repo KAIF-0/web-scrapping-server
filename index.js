@@ -9,39 +9,39 @@ import paymentInstance from "./routes/payment-routes.js";
 import { subRedisClient } from "./configs/redis/subscriptionInstance.js";
 import { chatRedisClient } from "./configs/redis/chatInstance.js";
 
-config(); 
+config();
 const app = new Hono();
 const port = process.env.PORT;
-  
+
 // console.log(process.env.REDIS_CHAT_INSTANCE_URL, port);
-     
-app.use("*", logger());  
-app.use(   
-  cors({   
-    origin: "*", 
-    credentials: true, 
+
+app.use("*", logger());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
   })
-); 
- 
-//redis instance(subscription Instance) 
+);
+
+//redis instance(subscription Instance)
 await subRedisClient 
   .connect()
   .then(() => {
-    console.log("SUBSCRIPTIONS REDIS INSTANCE CONNECTED!"); 
+    console.log("SUBSCRIPTIONS REDIS INSTANCE CONNECTED!");
   })
   .catch((err) => {
     console.log("SUBSCRIPTIONS REDIS ERROR: ", err);
   });
- 
+
 await chatRedisClient
   .connect()
   .then(() => {
     console.log("CHAT REDIS INSTANCE CONNECTED!");
-  }) 
+  })
   .catch((err) => {
     console.log("CHAT REDIS ERROR: ", err);
   });
- 
+
 app.route("/chat", chatInstance);
 app.route("/", scrappingInstance);
 app.route("/subscription", paymentInstance);
@@ -49,19 +49,19 @@ app.route("/subscription", paymentInstance);
 // app.get('/', (c) => {
 //   return c.text('Hello World!')
 // })
- 
+
 //for error 500 (middleware)
 app.onError((err, c) => {
-  console.error(err.message);  
-  return c.json( 
+  console.error(err.message);
+  return c.json(
     {
       success: false,
-      message: "Internal Server Error!", 
+      message: "Internal Server Error!",
     },
     500
-  ); 
-}); 
-  
+  );
+});
+
 //for 404 (middleware)
 app.notFound((c) => {
   console.error(c.get("message"));
@@ -70,15 +70,15 @@ app.notFound((c) => {
       success: false,
       message: c.get("message"),
     },
-    404 
+    404
   );
 });
 
-serve( 
+serve(
   {
     fetch: app.fetch,
     port: port,
-  }, 
+  },
   () => {
     console.log(`Server is running on port ${port}`);
   }

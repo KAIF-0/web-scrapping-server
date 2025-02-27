@@ -16,12 +16,13 @@ chatInstance.post("/feed-docs", async (c) => {
     // extracting a common key for all same urls with different endpoints
     const urlObj = new URL(url);
     const key =
-      urlObj.hostname.split(".")[0] === "www" || "docs"
+      urlObj.hostname.split(".")[0] === "www" ||
+      urlObj.hostname.split(".")[0] === "docs"
         ? urlObj.hostname.split(".")[1]
         : urlObj.hostname.split(".")[0];
 
     console.log(key);
-
+ 
     // checking if docs already exist in redis
     const existingDocs = await chatRedisClient.get(key);
     if (!existingDocs) {
@@ -30,7 +31,6 @@ chatInstance.post("/feed-docs", async (c) => {
     }
     // console.log(JSON.parse(existingDocs).length);
 
-    // await prisma.chat.deleteMany();
 
     const chat = await prisma.chat.create({
       data: {

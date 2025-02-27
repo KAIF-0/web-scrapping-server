@@ -13,10 +13,23 @@ const paymentInstance = new Hono();
 
 paymentInstance.post("/createOrder", async (c) => {
   try {
+    const requestData = await c.req.json();
     const { amount, name, email, phone, subscriptionType, userId } =
-      await c.req.json();
+      requestData; 
+
+    if (!amount || !name || !email || !phone || !subscriptionType || !userId) {
+      throw new Error("Missing required fields");
+    }
+
     const options = { amount, name, email, phone, subscriptionType, userId };
     const data = await createOrder(options);
+    if (!data?.success) {
+      throw new Error("Failed to create order!");
+    }
+ 
+
+
+    
     return c.json(data);
   } catch (error) {
     throw new Error(error.message);
@@ -68,7 +81,7 @@ paymentInstance.post("/saveDetails", async (c) => {
         : 365 * 24 * 60 * 60;
     subRedisClient.setEx(
       userId,
-      expiryTime, 
+      expiryTime,
       JSON.stringify(subscriptionDetails)
     );
 
