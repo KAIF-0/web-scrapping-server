@@ -24,7 +24,7 @@ app.use(
 );
 
 //redis instance(subscription Instance)
-await subRedisClient 
+await subRedisClient
   .connect()
   .then(() => {
     console.log("SUBSCRIPTIONS REDIS INSTANCE CONNECTED!");
@@ -41,6 +41,17 @@ await chatRedisClient
   .catch((err) => {
     console.log("CHAT REDIS ERROR: ", err);
   });
+
+//redis error events
+subRedisClient.on("error", (err) => {
+  console.error("SUBSCRIPTIONS REDIS ERROR:", err);
+  process.exit(1);
+});
+
+chatRedisClient.on("error", (err) => {
+  console.error("CHAT REDIS ERROR:", err);
+  process.exit(1);
+});
 
 app.route("/chat", chatInstance);
 app.route("/", scrappingInstance);
