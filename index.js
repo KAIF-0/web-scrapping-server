@@ -40,21 +40,49 @@ await chatRedisClient
   })
   .catch((err) => {
     console.log("CHAT REDIS ERROR: ", err);
-  }); 
+  });
 
 //redis error events
 subRedisClient.on("error", async (err) => {
   console.error("SUBSCRIPTIONS REDIS ERROR:", err);
 
-  //restart my client
-  await subRedisClient.connect();
+  //disconnect first before reconnecting
+  try {
+    await subRedisClient.disconnect();
+  } catch (disconnectErr) {
+    console.error("Error during disconnect:", disconnectErr);
+  }
+
+  //adding a delay
+  setTimeout(async () => {
+    try {
+      await subRedisClient.connect();
+      console.log("SUBSCRIPTIONS REDIS RECONNECTED");
+    } catch (reconnectErr) {
+      console.error("Failed to reconnect:", reconnectErr);
+    }
+  }, 1000);
 });
 
 chatRedisClient.on("error", async (err) => {
   console.error("CHAT REDIS ERROR:", err);
 
-  //restart my client
-  await chatRedisClient.connect();
+  //disconnect first before reconnecting
+  try {
+    await chatRedisClient.disconnect();
+  } catch (disconnectErr) {
+    console.error("Error during disconnect:", disconnectErr);
+  }
+
+  //sdding a delay
+  setTimeout(async () => {
+    try {
+      await chatRedisClient.connect();
+      console.log("CHAT REDIS RECONNECTED");
+    } catch (reconnectErr) {
+      console.error("Failed to reconnect:", reconnectErr);
+    }
+  }, 1000);
 });
 
 app.route("/chat", chatInstance);

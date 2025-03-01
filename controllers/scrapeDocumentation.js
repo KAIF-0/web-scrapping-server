@@ -10,7 +10,7 @@ export const scrapeDocumentation = async (key, url) => {
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: "load", timeout: 0 });
+  await page.goto(url, { waitUntil: "networkidle2", timeout: 0 });
 
   //get all the other pages links in the documentation for provided url
   const docLinks = await page.evaluate(() => {
