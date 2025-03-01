@@ -1,10 +1,14 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import { chatRedisClient } from "../configs/redis/chatInstance.js";
 import { subRedisClient } from "../configs/redis/subscriptionInstance.js";
+import chromium from "chromium"
 
 //function to scrape the documentation of the provided urll
 export const scrapeDocumentation = async (key, url) => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    executablePath: chromium.path,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "load", timeout: 0 });
 

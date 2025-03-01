@@ -40,7 +40,7 @@ await chatRedisClient
   })
   .catch((err) => {
     console.log("CHAT REDIS ERROR: ", err);
-  });
+  }); 
 
 //redis error events
 subRedisClient.on("error", async (err) => {
