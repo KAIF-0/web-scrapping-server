@@ -43,14 +43,18 @@ await chatRedisClient
   });
 
 //redis error events
-subRedisClient.on("error", (err) => {
+subRedisClient.on("error", async (err) => {
   console.error("SUBSCRIPTIONS REDIS ERROR:", err);
-  process.exit(1);
+
+  //restart my client
+  await subRedisClient.connect();
 });
 
-chatRedisClient.on("error", (err) => {
+chatRedisClient.on("error", async (err) => {
   console.error("CHAT REDIS ERROR:", err);
-  process.exit(1);
+
+  //restart my client
+  await chatRedisClient.connect();
 });
 
 app.route("/chat", chatInstance);
