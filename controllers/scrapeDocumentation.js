@@ -21,17 +21,18 @@ export const scrapeDocumentation = async (key, url) => {
   });
 
   // console.log(docLinks)
-
+ 
   let docsData = [];
 
   for (let pageLink of docLinks) {
     await page.goto(pageLink, { waitUntil: "load", timeout: 0 });
 
+    console.log(pageLink);
+
     //scrap all the text from all the pages
     const content = await page.evaluate(() => {
       return document.body.innerText;
     });
-    // console.log(content);
 
     docsData.push({ url: pageLink, content });
   }
