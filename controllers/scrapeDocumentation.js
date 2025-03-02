@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer-core";
 import { chatRedisClient } from "../configs/redis/chatInstance.js";
 import { subRedisClient } from "../configs/redis/subscriptionInstance.js";
-import chromium from "chromium"
+import chromium from "chromium";
 
 //function to scrape the documentation of the provided urll
 export const scrapeDocumentation = async (key, url) => {
@@ -9,8 +9,9 @@ export const scrapeDocumentation = async (key, url) => {
     executablePath: chromium.path,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
+
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: "networkidle2", timeout: 0 });
+  await page.goto(url, { waitUntil: "load", timeout: 0 });
 
   //get all the other pages links in the documentation for provided url
   const docLinks = await page.evaluate(() => {
@@ -38,5 +39,5 @@ export const scrapeDocumentation = async (key, url) => {
   await browser.close();
   //   console.log(docsData);
   //saving the scraped data in redis
-  chatRedisClient.setEx(key, 30 * 24 * 60 * 60, JSON.stringify(docsData));
+  await chatRedisClient.setEx(key, 30 * 24 * 60 * 60, JSON.stringify(docsData));
 };
